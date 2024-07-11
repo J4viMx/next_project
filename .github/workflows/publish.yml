@@ -19,15 +19,11 @@ jobs:
       - name: Build
         run: npm run build # The build command of your project
 
-      - name: Copy build output and push to build branch
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git clone --depth 1 --branch build https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} build_repo
-          rsync -av --delete out/ build_repo/
-          cd build_repo
-          git add .
-          git commit -m "Build: ${GITHUB_SHA}"
-          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} build --force
+      - name: Push
+        uses: s0/git-publish-subdir-action@develop
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: self
+          BRANCH: build # The branch name where you want to push the assets
+          FOLDER: out # The directory where your assets are generated
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
+          MESSAGE: "Build: ({sha}) {msg}" # The commit message
