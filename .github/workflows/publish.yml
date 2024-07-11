@@ -23,11 +23,11 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git clone --depth 1 --branch build https://github.com/${{ github.repository }} build_repo
+          git clone --depth 1 --branch build https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} build_repo
           rsync -av --delete out/ build_repo/
           cd build_repo
           git add .
           git commit -m "Build: ${GITHUB_SHA}"
-          git push origin build --force
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} build --force
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
