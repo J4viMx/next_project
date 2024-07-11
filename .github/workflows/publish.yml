@@ -19,13 +19,14 @@ jobs:
       - name: Build
         run: npm run build # The build command of your project
 
-      - name: Commit and Push to build branch
+      - name: Copy build output and push to build branch
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -B build
-          git rm -r --cached .
-          git add out -f
+          git clone --depth 1 --branch build https://github.com/${{ github.repository }} build_repo
+          rsync -av --delete out/ build_repo/
+          cd build_repo
+          git add .
           git commit -m "Build: ${GITHUB_SHA}"
           git push origin build --force
         env:
